@@ -1,6 +1,10 @@
 import express from "express";
 import createHttpError from "http-errors";
 import UserModel from "./model.js";
+import multer from "multer";
+import { pipeline } from "stream";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 const usersRouter = express.Router();
 
@@ -77,5 +81,37 @@ usersRouter.delete("/:userId", async (req, res, next) => {
     next(error);
   }
 });
+
+//Profile picture
+
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "UserProfilePhotos",
+    },
+  }),
+}).single("image");
+
+usersRouter.post(
+  "/:userId/profilePic",
+  cloudinaryUploader,
+  async (req, res, next) => {
+    try {
+      console.log(`I cant't read ${req.file}`);
+
+      const user = await UserModel.findById(req.params.userId);
+      const updatedUser = { ...user, image: "url" };
+      await updatedUser.save();
+      res.status(201).send({ _id });
+      res.send("File uploaded");
+    } catch (error) {
+      res.send(error);
+      next(error);
+    }
+  }
+);
+
+//and PDF
 
 export default usersRouter;
