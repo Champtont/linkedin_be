@@ -11,7 +11,12 @@ const usersSchema = new Schema(
     bio: { type: String, required: true },
     title: { type: String, required: true },
     area: { type: String, required: true },
-    image: { type: String, required: true },
+    image: {
+      type: String,
+      required: true,
+      default:
+        "https://www.labrador-owners.co.uk/images/user_images//system/default.jpg?v=1632230965",
+    },
     username: { type: String, required: true, unique: true },
   },
   {

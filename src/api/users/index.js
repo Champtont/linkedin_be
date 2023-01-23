@@ -91,20 +91,44 @@ const cloudinaryUploader = multer({
       folder: "UserProfilePhotos",
     },
   }),
-}).single("image");
+}).single("profilePic");
 
-usersRouter.post(
+usersRouter.put(
   "/:userId/profilePic",
   cloudinaryUploader,
   async (req, res, next) => {
+    /*try {
+      console.log(req.file);
+      const url = req.file.path;
+      //find the user
+      const oldUser = await UserModel.findById(req.params.userId);
+      console.log("2");
+      //add new image url to ... I am having trouble overwriting the data that was there
+      const updatePic = { ...oldUser, image: url };
+      console.log("3");
+      const updatedUser = updatePic;
+      console.log(updatedUser);
+      console.log("4");
+      res.status(201).send("File successfully uploaded");*/
     try {
-      console.log(`I cant't read ${req.file}`);
+      console.log(req.file);
+      const url = req.file.path;
+      const users = await UserModel.find();
 
-      const user = await UserModel.findById(req.params.userId);
-      const updatedUser = { ...user, image: "url" };
-      await updatedUser.save();
-      res.status(201).send({ _id });
-      res.send("File uploaded");
+      const index = users.findIndex((user) => user._id === req.params.userId); // 1. Find user (by userID)
+      if (index !== -1) {
+        const oldUser = users[index];
+        // 2. Add to user a field called avatar (or in the case of book it could be author.avatar) containing the url of the file
+
+        const image = { ...oldUser, image: url };
+        const updatedUser = { ...oldUser, image, updatedAt: new Date() };
+
+        users[index] = updatedUser;
+        console.log(users.toString);
+
+        await users.save();
+        res.status(201).send("File successfully uploaded");
+      }
     } catch (error) {
       res.send(error);
       next(error);
