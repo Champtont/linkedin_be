@@ -10,6 +10,12 @@ usersRouter.post("/", async (req, res, next) => {
     const { _id } = await newUser.save();
     res.status(201).send({ _id });
   } catch (error) {
+    console.log(error);
+    createHttpError(
+      400,
+      "The username ${req.params.username} is already taken, Please choose a different name"
+    );
+    res.status(400).send(error);
     next(error);
   }
 });
