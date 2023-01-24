@@ -9,7 +9,7 @@ export const getPDFReadableStream = async (userInfo) => {
     let base64Encoded = await imageToBase64(url);
     return "data:image/jpeg;base64, " + base64Encoded;
   }
-  const dataUrl = userInfo.image.toString();
+
   const fonts = {
     Roboto: {
       normal: "Helvetica",
@@ -20,12 +20,12 @@ export const getPDFReadableStream = async (userInfo) => {
 
   const docDefinition = {
     content: [
-      { image: "profilePic" },
+      { image: "profilePic", width: 150, heigth: 200 },
       { text: userInfo.name, style: "header" },
       { text: userInfo.bio },
     ],
     images: {
-      profilePic: await createBase64(dataUrl),
+      profilePic: await createBase64(userInfo.image),
     },
   };
 
@@ -33,13 +33,4 @@ export const getPDFReadableStream = async (userInfo) => {
   pdfReadableStream.end();
 
   return pdfReadableStream;
-};
-
-export const asyncPDFGeneration = async (userInfo) => {
-  const source = getPDFReadableStream(userInfo);
-  const destination = getPDFWritableStream(`${userInfo.name}sCV.pdf`);
-
-  const promiseBasedPipeline = promisify(pipeline);
-
-  await promiseBasedPipeline(source, destination);
 };

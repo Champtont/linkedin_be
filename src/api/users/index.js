@@ -120,10 +120,10 @@ usersRouter.post(
 //and PDF
 
 usersRouter.get("/:userId/pdf", async (req, res, next) => {
-  res.setHeader("Content-Disposition", "attachment; filename=media.pdf");
+  res.setHeader("Content-Disposition", "attachment; filename=myCV.pdf");
 
   const user = await UserModel.findById(req.params.userId);
-  const source = getPDFReadableStream(user);
+  const source = await getPDFReadableStream(user);
   const destination = res;
   pipeline(source, destination, (err) => {
     if (err) console.log(err);
