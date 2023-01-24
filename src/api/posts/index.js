@@ -12,6 +12,7 @@ postsRouter.get("/", async (req, res, next) => {
     });
     res.send(posts);
   } catch (error) {
+    res.send(error);
     next(error);
   }
 });
@@ -30,6 +31,7 @@ postsRouter.get("/:postId", async (req, res, next) => {
       );
     }
   } catch (error) {
+    res.send(error);
     next(error);
   }
 });
