@@ -20,9 +20,28 @@ export const getPDFReadableStream = async (userInfo) => {
 
   const docDefinition = {
     content: [
-      { image: "profilePic", width: 150, heigth: 200 },
-      { text: userInfo.name, style: "header" },
-      { text: userInfo.bio },
+      {
+        alignment: "center",
+        columns: [
+          { image: "profilePic", width: 150, heigth: 200, margin: 10 },
+          {
+            text: userInfo.name + " " + userInfo.surname,
+            style: { fontSize: 35 },
+            margin: [0, 60],
+          },
+        ],
+      },
+      {
+        text: "Bio",
+        style: { fontSize: 25, color: "darkblue" },
+        margin: [0, 5],
+      },
+      { text: userInfo.bio, style: { fontSize: 20, alignment: "left" } },
+      {
+        text: "Experiences",
+        style: { fontSize: 25, color: "darkred" },
+        margin: [0, 5],
+      },
     ],
     images: {
       profilePic: await createBase64(userInfo.image),
