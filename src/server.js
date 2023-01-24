@@ -7,7 +7,7 @@ import {
   badRequestHandler,
   notFoundHandler,
   genericErrorHandler,
-} from "./errorHandlers";
+} from "./errorHandlers.js";
 import postsRouter from "./api/posts/index.js";
 
 const server = express();
