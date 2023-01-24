@@ -4,10 +4,10 @@ const { Schema, model } = mongoose;
 
 const postsSchema = new Schema(
   {
-    category: { type: String, required: true },
-    description: { type: String, required: true },
-    imageUrl: { type: String, required: false },
-    user: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+    text: { type: String, required: true },
+    username: { type: String, required: true },
+    image: { type: String, required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
   },
 
   {
@@ -15,4 +15,4 @@ const postsSchema = new Schema(
   }
 );
 
-export default model("Posts", postsSchema);
+export default model("Post", postsSchema);
