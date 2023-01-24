@@ -99,18 +99,17 @@ usersRouter.post(
   cloudinaryUploader,
   async (req, res, next) => {
     try {
-      console.log(req.file);
-      const url = req.file.path;
-      //find the user
-      const oldUser = await UserModel.findById(req.params.userId);
-      console.log("2");
-      //add new image url to ... I am having trouble overwriting the data that was there
-      const updatePic = { oldUser, image: url };
-      console.log("3");
-      const updatedUser = updatePic;
-      console.log(updatedUser);
-      console.log("4");
-      res.status(201).send(updatedUser._doc);
+      //find the user and update
+      const user = await UserModel.findByIdAndUpdate(
+        req.params.userId,
+        { image: req.file.path },
+        { new: true }
+      );
+      if (!user)
+        next(
+          createHttpError(404, `No user wtih the id of ${req.params.userId}`)
+        );
+      res.status(201).send(user);
     } catch (error) {
       res.send(error);
       next(error);
