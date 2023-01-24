@@ -3,10 +3,9 @@ import createHttpError from "http-errors";
 import UserModel from "./model.js";
 import multer from "multer";
 import { pipeline } from "stream";
-/*
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-*/
+
 const usersRouter = express.Router();
 
 usersRouter.post("/", async (req, res, next) => {
@@ -84,7 +83,7 @@ usersRouter.delete("/:userId", async (req, res, next) => {
 });
 
 //Profile picture
-/*
+
 const cloudinaryUploader = multer({
   storage: new CloudinaryStorage({
     cloudinary,
@@ -117,7 +116,7 @@ usersRouter.post(
     }
   }
 );
-*/
+
 //and PDF
 
 // Epreriences embedded
