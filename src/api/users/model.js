@@ -37,6 +37,7 @@ const usersSchema = new Schema(
     },
     username: { type: String, required: true, unique: true },
     experiences: [experiencesSchema],
+
   },
   {
     timestamps: true,
