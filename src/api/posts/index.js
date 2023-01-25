@@ -1,9 +1,4 @@
 import express from "express";
-
-
-const postsRouter = express.Router();
-
-=======
 import createHttpError from "http-errors";
 import PostModel from "./model.js";
 
@@ -88,6 +83,5 @@ postsRouter.delete("/:postId", async (req, res, next) => {
     next(error);
   }
 });
-
 
 export default postsRouter;

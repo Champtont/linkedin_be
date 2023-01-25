@@ -195,18 +195,6 @@ usersRouter.get(
         );
       }
     } catch (error) {
-      //find the user and update
-      const user = await UserModel.findByIdAndUpdate(
-        req.params.userId,
-        { image: req.file.path },
-        { new: true }
-      );
-      if (!user)
-        next(
-          createHttpError(404, `No user wtih the id of ${req.params.userId}`)
-        );
-      res.status(201).send(user);
-    } catch (error) {
       res.send(error);
       next(error);
     }
