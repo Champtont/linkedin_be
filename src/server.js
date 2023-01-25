@@ -4,6 +4,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import usersRouter from "./api/users/index.js";
 import postsRouter from "./api/posts/index.js";
+import { filesRouter } from "./api/files/index.js";
 import {
   badRequestHandler,
   notFoundHandler,
@@ -20,6 +21,7 @@ server.use(express.json());
 //  ENDPOINTS
 server.use("/users", usersRouter);
 server.use("/posts", postsRouter);
+server.use("/files", filesRouter);
 
 // ERROR HANDLERS
 server.use(badRequestHandler);
