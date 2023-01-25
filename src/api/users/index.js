@@ -7,7 +7,6 @@ import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { getPDFReadableStream } from "../lib/pdf_tools.js";
 
-
 const usersRouter = express.Router();
 
 usersRouter.post("/", async (req, res, next) => {
@@ -100,18 +99,17 @@ usersRouter.post(
   cloudinaryUploader,
   async (req, res, next) => {
     try {
-      console.log(req.file);
-      const url = req.file.path;
-      //find the user
-      const oldUser = await UserModel.findById(req.params.userId);
-      console.log("2");
-      //add new image url to ... I am having trouble overwriting the data that was there
-      const updatePic = { oldUser, image: url };
-      console.log("3");
-      const updatedUser = updatePic;
-      console.log(updatedUser);
-      console.log("4");
-      res.status(201).send(updatedUser._doc);
+      //find the user and update
+      const user = await UserModel.findByIdAndUpdate(
+        req.params.userId,
+        { image: req.file.path },
+        { new: true }
+      );
+      if (!user)
+        next(
+          createHttpError(404, `No user wtih the id of ${req.params.userId}`)
+        );
+      res.status(201).send(user);
     } catch (error) {
       res.send(error);
       next(error);
@@ -133,7 +131,7 @@ usersRouter.get("/:userId/pdf", async (req, res, next) => {
   });
 });
 
-// Epreriences embedded
+// Epreriences referenced
 usersRouter.get("/:userId/experiences", async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.params.userId);
@@ -152,7 +150,7 @@ usersRouter.get("/:userId/experiences", async (req, res, next) => {
 
 usersRouter.post("/:userId/experiences", async (req, res, next) => {
   try {
-    const newExperience = { ...req.body };
+    const newExperience = req.body;
     if (newExperience) {
       const updatedUser = await UserModel.findByIdAndUpdate(
         req.params.userId,
@@ -166,6 +164,7 @@ usersRouter.post("/:userId/experiences", async (req, res, next) => {
       );
     }
   } catch (error) {
+    res.send(error);
     next(error);
   }
 });
@@ -200,7 +199,6 @@ usersRouter.get(
     }
   }
 );
-
 
 usersRouter.put(
   "/:userId/experiences/:experienceId",
@@ -252,6 +250,5 @@ usersRouter.delete(
     }
   }
 );
-
 
 export default usersRouter;
