@@ -1,6 +1,10 @@
 import express from "express";
 import createHttpError from "http-errors";
 import PostModel from "./model.js";
+import multer from "multer";
+import { pipeline } from "stream";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 const postsRouter = express.Router();
 
@@ -85,5 +89,37 @@ postsRouter.delete("/:postId", async (req, res, next) => {
     next(error);
   }
 });
+
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "PostsProfilePhotos",
+    },
+  }),
+}).single("profilePostsPic");
+
+postsRouter.post(
+  "/:postId/profilePostsPic",
+  cloudinaryUploader,
+  async (req, res, next) => {
+    try {
+      //find the user and update
+      const post = await PostModel.findByIdAndUpdate(
+        req.params.postId,
+        { image: req.file.path },
+        { new: true }
+      );
+      if (!post)
+        next(
+          createHttpError(404, `No user wtih the id of ${req.params.postId}`)
+        );
+      res.status(201).send(post);
+    } catch (error) {
+      res.send(error);
+      next(error);
+    }
+  }
+);
 
 export default postsRouter;
