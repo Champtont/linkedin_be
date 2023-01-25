@@ -9,6 +9,7 @@ import {
   notFoundHandler,
   genericErrorHandler,
 } from "./errorHandlers.js";
+import postsRouter from "./api/posts/index.js";
 
 const server = express();
 const port = process.env.PORT || 3002;
