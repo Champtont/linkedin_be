@@ -117,7 +117,7 @@ usersRouter.post(
   }
 );
 
-//and PDF
+//and CV as PDF
 
 usersRouter.get("/:userId/pdf", async (req, res, next) => {
   res.setHeader("Content-Disposition", "attachment; filename=myCV.pdf");
