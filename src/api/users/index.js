@@ -156,4 +156,85 @@ usersRouter.post("/:userId/experiences", async (req, res, next) => {
   }
 });
 
+usersRouter.get(
+  "/:userId/experiences/:experienceId",
+  async (req, res, next) => {
+    try {
+      const user = await UserModel.findById(req.params.userId);
+      if (user) {
+        const currentExperience = user.experiences.find(
+          (user) => user._id.toString() === req.params.experienceId
+        );
+        if (currentExperience) {
+          res.send(currentExperience);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `Experience with id ${req.params.experienceId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(404, `User with id ${req.params.userId} not found!`)
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+usersRouter.put(
+  "/:userId/experiences/:experienceId",
+  async (req, res, next) => {
+    try {
+      const user = await UserModel.findById(req.params.userId);
+      if (user) {
+        const index = user.experiences.findIndex(
+          (experience) => experience._id.toString() === req.params.experienceId
+        );
+        const updatedExperience = user.experiences[index].toObject();
+        user.experiences[index] = {
+          ...updatedExperience,
+          ...req.body,
+        };
+        await user.save();
+        res.status(200).send(user);
+      } else {
+        next(
+          createHttpError(
+            `Experience with id ${req.params.experienceId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+usersRouter.delete(
+  "/:userId/experiences/:experienceId",
+  async (req, res, next) => {
+    try {
+      const updatedUser = await UserModel.findByIdAndUpdate(
+        req.params.userId,
+        {
+          $pull: { experiences: { _id: req.params.experienceId } },
+        },
+        { new: true }
+      );
+      if (updatedUser) {
+        res.send(updatedUser);
+      } else {
+        next(createHttpError("Not working :)"));
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default usersRouter;
