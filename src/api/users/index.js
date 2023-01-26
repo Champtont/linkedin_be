@@ -12,7 +12,7 @@ const experienceCloudinaryUploader = multer({
   storage: new CloudinaryStorage({
     cloudinary,
     params: {
-      folder: "BW4-LINKEDIN-CLONE-BE/public/imgs",
+      folder: "linkedin_be/public/imgs",
       public_id: (req) => req.params.experienceId,
     },
   }),
@@ -28,7 +28,7 @@ usersRouter.post("/", async (req, res, next) => {
     console.log(error);
     createHttpError(
       400,
-      "The username ${req.params.username} is already taken, Please choose a different name"
+      `The username ${req.params.username} is already taken, Please choose a different name`
     );
     res.status(400).send(error);
     next(error);
@@ -266,28 +266,22 @@ usersRouter.post(
   experienceCloudinaryUploader,
   async (req, res, next) => {
     try {
+      console.log(req.file);
       const user = await UserModel.findById(req.params.userId);
       if (user) {
         const selectedExperienceIndex = user.experiences.findIndex(
           (experience) => experience._id.toString() === req.params.experienceId
         );
         if (selectedExperienceIndex !== -1) {
-          cloudinary.uploader
-            .upload(url, {
-              public_id: req.params.experienceId,
-              tags: "experience_image",
-            })
-            .then((result) => {
-              const imageUrl = result.url;
-              user.experiences[selectedExperienceIndex].image = imageUrl;
-              user.save({ validateBeforeSave: false }).then(() => {
-                res.send(user);
-              });
-            })
-            .catch((error) => {
-              console.log(error);
-              next(error);
-            });
+          {
+            user.experiences[selectedExperienceIndex] = {
+              ...user.experiences[selectedExperienceIndex].toObject(),
+              image: req.file.path,
+            };
+          }
+          console.log(imageUrl);
+          await user.save();
+          res.send(user);
         } else {
           next(
             createHttpError(
