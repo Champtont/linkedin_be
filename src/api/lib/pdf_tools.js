@@ -42,6 +42,29 @@ export const getPDFReadableStream = async (userInfo) => {
         style: { fontSize: 25, color: "darkred" },
         margin: [0, 5],
       },
+      {
+        ul: [
+          userInfo.experiences?.map(function (experience) {
+            return {
+              ul: [
+                experience.role +
+                  " at " +
+                  experience.company +
+                  "." +
+                  "\n" +
+                  "Description: " +
+                  experience.description +
+                  "\n" +
+                  "Area: " +
+                  experience.area,
+              ],
+              margin: [0, 3, 0, 3],
+            };
+          }),
+        ],
+
+        lineHeight: 2,
+      },
     ],
     images: {
       profilePic: await createBase64(userInfo.image),
