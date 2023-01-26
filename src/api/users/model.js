@@ -29,7 +29,7 @@ const usersSchema = new Schema(
         image: {
           type: String,
           default:
-            "https://www.labrador-owners.co.uk/images/user_images//system/default.jpg?v=1632230965",
+            "https://th.bing.com/th/id/R.4c474e6e070c93d1dca94c30765788b1?rik=gu6AihOGaNCGkw&riu=http%3a%2f%2fwww.advancehc.com.au%2fwp-content%2fuploads%2f2018%2f05%2fHigh-rise-buildings-and-blue-sky-Shinjuku-Tokyo-Japan-624031578_6016x4016.jpeg&ehk=%2fv9e9nzJWHz3iIxNBk8lbyzbyUVTIU9NDkce1fhGez8%3d&risl=&pid=ImgRaw&r=0",
           required: true,
         },
       },

@@ -8,6 +8,16 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { getPDFReadableStream } from "../lib/pdf_tools.js";
 
 const usersRouter = express.Router();
+const experienceCloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "BW4-LINKEDIN-CLONE-BE/public/imgs",
+      public_id: (req) => req.params.experienceId,
+    },
+  }),
+  limits: { fileSize: 1024 * 1024 },
+}).single("experience");
 
 usersRouter.post("/", async (req, res, next) => {
   try {
@@ -117,7 +127,7 @@ usersRouter.post(
   }
 );
 
-//and PDF
+//and CV as PDF
 
 usersRouter.get("/:userId/pdf", async (req, res, next) => {
   res.setHeader("Content-Disposition", "attachment; filename=myCV.pdf");
@@ -244,6 +254,53 @@ usersRouter.delete(
         res.send(updatedUser);
       } else {
         next(createHttpError("Not working :)"));
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+
+usersRouter.post(
+  "/:userId/experiences/:experienceId/image",
+  experienceCloudinaryUploader,
+  async (req, res, next) => {
+    try {
+      const user = await UserModel.findById(req.params.userId);
+      if (user) {
+        const selectedExperienceIndex = user.experiences.findIndex(
+          (experience) => experience._id.toString() === req.params.experienceId
+        );
+        if (selectedExperienceIndex !== -1) {
+          cloudinary.uploader
+            .upload(url, {
+              public_id: req.params.experienceId,
+              tags: "experience_image",
+            })
+            .then((result) => {
+              const imageUrl = result.url;
+              user.experiences[selectedExperienceIndex].image = imageUrl;
+              user.save({ validateBeforeSave: false }).then(() => {
+                res.send(user);
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+              next(error);
+            });
+        } else {
+          next(
+            createHttpError(
+              404,
+              `Experience with id ${req.params.experienceId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(404, `User with id ${req.params.userId} not found!`)
+        );
       }
     } catch (error) {
       next(error);

@@ -27,7 +27,7 @@ postsRouter.get("/", async (req, res, next) => {
       })
       .populate({
         path: "user",
-        select: "name surname image username",
+        select: "name surname image username email title",
       });
     res.send(posts);
   } catch (error) {
@@ -39,7 +39,7 @@ postsRouter.get("/:postId", async (req, res, next) => {
   try {
     const post = await PostModel.findById(req.params.postId).populate({
       path: "user",
-      select: "name surname image username",
+      select: "name surname image username email title",
     });
     if (post) {
       res.send(post);
