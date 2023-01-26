@@ -2,21 +2,35 @@ import express from "express";
 import createHttpError from "http-errors";
 import PostModel from "./model.js";
 import multer from "multer";
-import { pipeline } from "stream";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import q2m from "query-to-mongo";
 
 const postsRouter = express.Router();
 
 postsRouter.get("/", async (req, res, next) => {
   try {
-    const posts = await PostModel.find().populate({
-      path: "user",
-      select: "name surname image username email title",
-    });
+    const mongoQuery = q2m(req.query);
+    const total = await PostModel.countDocuments(mongoQuery.criteria);
+    const posts = await PostModel.find(
+      mongoQuery.criteria,
+      mongoQuery.options.fields
+    )
+      .limit(mongoQuery.options.limit)
+      .skip(mongoQuery.options.skip)
+      .sort(mongoQuery.options.sort);
+    res
+      .send({
+        links: mongoQuery.links("http://localhost:3002/posts", total),
+        totalPages: Math.ceil(total / mongoQuery.options.limit),
+        posts,
+      })
+      .populate({
+        path: "user",
+        select: "name surname image username email title",
+      });
     res.send(posts);
   } catch (error) {
-    res.send(error);
     next(error);
   }
 });
@@ -63,7 +77,7 @@ postsRouter.put("/:postId", async (req, res, next) => {
       res.send(updatedPost);
     } else {
       next(
-        createHttpError(404, `User with id ${req.params.userId} not found!`)
+        createHttpError(404, `User with id ${req.params.postId} not found!`)
       );
     }
   } catch (error) {
