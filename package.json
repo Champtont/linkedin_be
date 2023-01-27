@@ -2,7 +2,7 @@
   "name": "linkedin_be",
   "version": "1.0.0",
   "description": "building a BE for a previously built FE",
-  "main": "./src/server.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
