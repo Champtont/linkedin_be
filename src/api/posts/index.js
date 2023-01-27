@@ -18,16 +18,15 @@ postsRouter.get("/", async (req, res, next) => {
     )
       .limit(mongoQuery.options.limit)
       .skip(mongoQuery.options.skip)
-      .sort(mongoQuery.options.sort);
-    res
-      .send({
-        links: mongoQuery.links("http://localhost:3002/posts", total),
-        totalPages: Math.ceil(total / mongoQuery.options.limit),
-        posts,
-      })
+      .sort(mongoQuery.options.sort)
       .populate({
-        path: "User",
+        path: "user",
       });
+    res.send({
+      links: mongoQuery.links("http://localhost:3002/posts", total),
+      totalPages: Math.ceil(total / mongoQuery.options.limit),
+      posts,
+    });
     res.send(posts);
   } catch (error) {
     next(error);
@@ -37,7 +36,7 @@ postsRouter.get("/", async (req, res, next) => {
 postsRouter.get("/:postId", async (req, res, next) => {
   try {
     const post = await PostModel.findById(req.params.postId).populate({
-      path: "User",
+      path: "user",
     });
     if (post) {
       res.send(post);
