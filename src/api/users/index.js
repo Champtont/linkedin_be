@@ -8,16 +8,6 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { getPDFReadableStream } from "../lib/pdf_tools.js";
 
 const usersRouter = express.Router();
-const experienceCloudinaryUploader = multer({
-  storage: new CloudinaryStorage({
-    cloudinary,
-    params: {
-      folder: "BW4-LINKEDIN-CLONE-BE/public/imgs",
-      public_id: (req) => req.params.experienceId,
-    },
-  }),
-  limits: { fileSize: 1024 * 1024 },
-}).single("experience");
 
 usersRouter.post("/", async (req, res, next) => {
   try {
@@ -141,7 +131,7 @@ usersRouter.get("/:userId/pdf", async (req, res, next) => {
   });
 });
 
-// Epreriences referenced
+// Epreriences Embedded
 usersRouter.get("/:userId/experiences", async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.params.userId);
@@ -261,6 +251,18 @@ usersRouter.delete(
   }
 );
 
+//add picture to experiences
+
+const experienceCloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "Experiences",
+      public_id: (req) => req.params.experienceId,
+    },
+  }),
+  limits: { fileSize: 1024 * 1024 },
+}).single("experience");
 
 usersRouter.post(
   "/:userId/experiences/:experienceId/image",
