@@ -21,6 +21,7 @@ postsRouter.get("/", async (req, res, next) => {
       .sort(mongoQuery.options.sort)
       .populate({
         path: "user",
+        model: "User",
       });
     res.send({
       links: mongoQuery.links("http://localhost:3002/posts", total),
